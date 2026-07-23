@@ -8,7 +8,7 @@ operation.
 
 ```mermaid
 flowchart LR
-    C[Customer] --> UI[Bank web or mobile chat]
+    C[Customer] --> UI[Streamlit web UI - demo]
     UI --> GW[API gateway / session layer]
     GW --> AUTH[Bank authentication service]
     GW --> A[Strands card replacement agent]

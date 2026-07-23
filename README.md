@@ -40,13 +40,25 @@ environment variables and authentication method.
 
 ## Run the demo
 
+### Terminal chat
+
 ```bash
 python agent.py
 ```
 
-For the mock flow, the available customer ID is `customer-demo`. The demo
-authentication tool accepts a secure verification-session reference that starts
-with `verified-`, such as `verified-demo-session`.
+### Streamlit web interface
+
+```bash
+streamlit run app.py
+```
+
+The Streamlit interface keeps chat history and a dedicated agent instance per
+browser session. Use **Start new conversation** in its sidebar to clear both.
+
+The repository contains 500 fictional customers in `data/mock_customers.json`.
+For the mock flow, use `customer-0001` and a secure verification-session
+reference that begins with `verified-`, such as `verified-customer-0001`.
+Each synthetic customer has one debit and one credit card.
 
 Example conversation:
 
@@ -54,7 +66,7 @@ Example conversation:
 Customer: I lost my credit card.
 Assistant: I can help protect and replace it. Please complete secure verification.
 
-Customer: My customer ID is customer-demo and my verification session is verified-demo-session.
+Customer: My customer ID is customer-0001 and my verification session is verified-customer-0001.
 Assistant: I found your masked credit card. Would you like me to block it?
 
 Customer: Yes, block it and send a replacement.
@@ -65,7 +77,11 @@ Assistant: Your card is blocked. After confirming delivery terms, I can submit t
 
 | File | Purpose |
 | --- | --- |
-| `agent.py` | Agent instructions, mock data, mock bank tools, and interactive entry point. |
+| `agent.py` | Agent instructions, tool registration, and interactive entry point. |
+| `app.py` | Streamlit-based browser chat interface. |
+| `tools/` | Mock banking-tool package; replace its implementations with secured bank-service integrations. |
+| `data/mock_customers.json` | Generated synthetic data for 500 fictional customers and 1,000 cards. |
+| `data/generate_mock_data.py` | Deterministic script to regenerate the synthetic dataset. |
 | `requirements.txt` | Python dependencies. |
 | `__init__.py` | Package initializer. |
 
