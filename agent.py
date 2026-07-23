@@ -6,7 +6,10 @@ audited calls to the bank's card-management services before production use.
 
 from __future__ import annotations
 
+import os
+
 from strands import Agent
+from strands.models.ollama import OllamaModel
 
 if __package__:
     from .tools import (
@@ -31,6 +34,15 @@ else:
 SYSTEM_PROMPT = """
 You are a bank assistant for debit- and credit-card replacements.
 
+Scope: You handle only debit- and credit-card replacement requests. If a
+customer asks an unrelated question (for example, geography, general knowledge,
+or another banking service), politely state that you can help only with card
+replacement requests. Do not call a tool for an unrelated question. Never
+invent a customer ID, card ID, verification-session reference, or tool input.
+For this local demo, customer IDs are ten-digit numeric values, such as
+`1000000001`. Ask for the customer's customer ID only after they state that
+they completed secure verification; never make up an ID on their behalf.
+
 Follow this sequence:
 1. Identify the replacement reason and whether the card is debit or credit.
 2. Require secure authentication before accessing card details or taking action.
@@ -48,10 +60,20 @@ is suspected, a transaction is disputed, authentication fails, or policy is uncl
 """
 
 
+def create_local_model() -> OllamaModel:
+    """Create the locally hosted Ollama model used by the demo."""
+    return OllamaModel(
+        host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+        model_id=os.getenv("OLLAMA_MODEL_ID", "llama3.1"),
+        temperature=0.2,
+    )
+
+
 def create_card_replacement_agent() -> Agent:
     """Create an agent instance for one customer conversation."""
     return Agent(
         name="Card Replacement Assistant",
+        model=create_local_model(),
         system_prompt=SYSTEM_PROMPT,
         tools=[
             authenticate_customer,

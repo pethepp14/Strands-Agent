@@ -12,16 +12,19 @@ flowchart LR
     UI --> GW[API gateway / session layer]
     GW --> AUTH[Bank authentication service]
     GW --> A[Strands card replacement agent]
+    A --> MODEL[Ollama local model]
 
     A --> P[Replacement policy and safety instructions]
     A --> T[Tool layer]
-    T --> CARD[Card-management service]
-    T --> ELIG[Eligibility and fee service]
-    T --> DEL[Address and delivery service]
-    T --> CASE[Replacement request service]
+    T --> DB[(SQLite demo database<br/>current MVP)]
+    T -. production integration .-> CARD[Card-management service]
+    T -. production integration .-> ELIG[Eligibility and fee service]
+    T -. production integration .-> DEL[Address and delivery service]
+    T -. production integration .-> CASE[Replacement request service]
     T --> ESC[Human-agent handoff]
 
     AUTH --> AUDIT[Audit and monitoring]
+    DB --> AUDIT
     CARD --> AUDIT
     ELIG --> AUDIT
     CASE --> AUDIT

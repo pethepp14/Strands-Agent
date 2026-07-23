@@ -5,6 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 from agent import create_card_replacement_agent
+from guardrails import OUT_OF_SCOPE_MESSAGE, is_card_replacement_query
 
 
 st.set_page_config(page_title="Card Replacement Assistant", page_icon="💳")
@@ -13,6 +14,7 @@ st.set_page_config(page_title="Card Replacement Assistant", page_icon="💳")
 def start_conversation() -> None:
     """Start a new, session-scoped agent and reset the visible chat history."""
     st.session_state.agent = create_card_replacement_agent()
+    st.session_state.card_replacement_context = False
     st.session_state.messages = [
         {
             "role": "assistant",
@@ -25,7 +27,11 @@ def start_conversation() -> None:
     ]
 
 
-if "agent" not in st.session_state or "messages" not in st.session_state:
+if (
+    "agent" not in st.session_state
+    or "messages" not in st.session_state
+    or "card_replacement_context" not in st.session_state
+):
     start_conversation()
 
 st.title("💳 Card Replacement Assistant")
@@ -34,7 +40,7 @@ st.caption("Demo application — mock data and tools only. Do not enter real ban
 with st.sidebar:
     st.subheader("Demo controls")
     st.info(
-        "Use `customer-0001` and a verification session beginning with `verified-` "
+        "Use `1000000001` and a verification session beginning with `verified-` "
         "for the mock flow. The dataset contains 500 fictional customers."
     )
     if st.button("Start new conversation", use_container_width=True):
@@ -59,14 +65,18 @@ if prompt := st.chat_input("Describe the card replacement you need"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        with st.spinner("Checking your request..."):
-            try:
-                response = str(st.session_state.agent(prompt))
-            except Exception:
-                response = (
-                    "I couldn't complete that request in this demo. Please try again "
-                    "or contact a bank representative."
-                )
+        if not st.session_state.card_replacement_context and not is_card_replacement_query(prompt):
+            response = OUT_OF_SCOPE_MESSAGE
+        else:
+            st.session_state.card_replacement_context = True
+            with st.spinner("Checking your request..."):
+                try:
+                    response = str(st.session_state.agent(prompt))
+                except Exception:
+                    response = (
+                        "I couldn't complete that request in this demo. Please try again "
+                        "or contact a bank representative."
+                    )
         st.markdown(response)
 
     st.session_state.messages.append({"role": "assistant", "content": response})

@@ -14,8 +14,9 @@ OUTPUT_FILE = Path(__file__).with_name("mock_customers.json")
 def build_customer(index: int) -> dict:
     """Create one fictional customer with one debit and one credit card."""
     customer_number = f"{index:04d}"
+    customer_id = f"{1_000_000_000 + index:010d}"
     return {
-        "customer_id": f"customer-{customer_number}",
+        "customer_id": customer_id,
         "display_name": f"Demo Customer {customer_number}",
         "registered_address": (
             f"{index} Demo Lane, Test District, Example City, 100{index % 100:02d}"
