@@ -1,3 +1,12 @@
 strands-agents[ollama]>=1.0.0
 strands-agents-tools>=0.2.0
 streamlit>=1.42.0
+
+pandas==1.4.2
+numpy==1.22.3
+
+matplotlib==3.5.1
+boto3==1.21.0
+cv2==3.4.15  # assuming cv2 should be numpy-opencv2 (OpenCV 3.4)
+scikit-learn==1.0.2
+
